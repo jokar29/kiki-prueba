@@ -1,0 +1,99 @@
+1. Escriba una sentencia SQL que liste los nombres de las escuelas, los
+nombres de los estudiantes y sus ciudades sólo si la escuela y el
+estudiante están en la misma ciudad y el estudiante no es de Nueva
+York.
+
+SELECT s.school_name, st.student_name, st.city
+FROM school AS s
+JOIN student AS st ON s.city = st.city
+WHERE st.city <> 'New York';
+
+2.Escriba una sentencia SQL que enumere los nombres de los estudiantes,
+los nombres de las asignaturas, los profesores de las asignaturas y la
+cantidad máxima de puntos para todas las asignaturas excepto Ciencias
+de la Computación y cualquier asignatura con una puntuación máxima
+entre 100 y 200.
+
+SELECT 
+    st.student_name,
+    sb.subject_name,
+    sb.lecturer,
+    MAX(sb.max_score) AS max_score
+FROM 
+    student AS st
+JOIN 
+    subject AS sb ON st.subject_id = sb.subject_id
+WHERE 
+    sb.subject_name != 'Computer Science' AND sb.max_puntos NOT BETWEEN 100 AND 200
+GROUP BY 
+    st.student_name, sb.subject_name, sb.lecturer;
+
+3.¿Qué es lo que falla en esta consulta SQL?
+
+SELECT Id, name, YEAR(BillingDate) AS Year
+FROM Records
+WHERE Year >= 2010 ----->no se debe usar el alias de columba se debe colocar YEAR(BillingDate)
+SELECT id, name ------>se realiza una consulta adicional que no tiene relacion con la anterior
+FROM students
+WHERE grades =
+ (SELECT MAX(grades)
+ FROM students
+ GROUP BY subject_id;);------->no se tiene relacion entre la tabla students y subject
+
+4.¿Cuál será el resultado de la siguiente consulta?
+
+SELECT name
+FROM worker
+WHERE id NOT IN (SELECT manager_id FROM departments)
+
+Table: worker
+name
+-----------
+Gene Roberts
+Bryant Summers
+
+5.La tabla EMPLOYEE tabla tiene los siguientes atributos: NAME, DEPT_ID,
+y SALARY. Escribe una consulta que muestre el salario más alto de cada
+departamento.
+
+SELECT DEPT_ID, MAX(SALARY) AS Max_Salary
+FROM EMPLOYEE
+GROUP BY DEPT_ID;
+
+6.Escriba una consulta SQL que muestre la fecha actual.
+
+SELECT GETDATE();
+
+7.Escriba una consulta SQL que compruebe si una fecha (1/04/12) pasada a
+la consulta está en un formato determinado (MM/AA/DD).
+
+DECLARE @Fecha NVARCHAR(10) = '1/04/12';
+
+SELECT 
+    CASE 
+        WHEN TRY_CAST(@Fecha AS DATE) IS NOT NULL THEN 'Formato válido'
+        ELSE 'Formato inválido'
+    END AS Resultado;
+
+8.Escriba una consulta que enumere los nombres de las asignaturas de los
+cursos y el número de estudiantes que los cursan sólo si el curso tiene
+tres o más estudiantes inscritos
+
+SELECT sb.subject_name, COUNT(st.student_id) AS num_student
+FROM subject AS sb
+JOIN student AS st ON sb.subject_id = st.subject_id
+GROUP BY sb.subject_name
+HAVING COUNT(st.student_id) >= 3;
+
+9.Escriba una consulta que muestre la edad media de los trabajadores de
+cada empresa. El resultado debe mostrar el nombre de la empresa y la
+edad del trabajador más joven de la empresa.
+
+SELECT 
+    c.NAME AS company_name, AVG(workers.AGE) AS age_middle_workers, MIN(workers.AGE) AS age_younger_worker
+FROM 
+    workers AS t
+INNER JOIN 
+    company AS c ON t.COMPANY_ID = c.ID
+GROUP BY 
+    c.NAME;
